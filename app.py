@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta, timezone
 from streamlit_geolocation import streamlit_geolocation
 import weatherreport
+import hourly_weatherreport
+import Weathergraphs
 
 
 # ==========================================================
@@ -144,39 +146,62 @@ tab1, tab2, tab3 = st.tabs(
 @st.cache_data(ttl=3600)
 def generate_historical_report(lat, lon):
     weatherreport.generate_30_day_report(lat, lon)
+    hourly_weatherreport.generate_hourly_weather_report(lat, lon)
 
 
 # ==========================================================
 # GRAPH FUNCTION
 # ==========================================================
 
-def plot_weather_graph(csv_file, column, title, ylabel):
+def plot_weather_graph(csv_file, column, title, ylabel, figsize=(4, 3)):
 
     df = pd.read_csv(csv_file)
 
     df["date"] = pd.to_datetime(df["date"])
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots(figsize=figsize)
 
     ax.plot(
         df["date"],
         df[column],
-        marker="o"
+        marker="o",
+        markersize=3,
+        linewidth=1.5
     )
 
-    ax.set_title(title)
-    ax.set_xlabel("Date")
-    ax.set_ylabel(ylabel)
+    ax.set_title(title, fontsize=10)
+    ax.set_xlabel("Date", fontsize=8)
+    ax.set_ylabel(ylabel, fontsize=8)
 
-    ax.grid(True)
+    ax.tick_params(axis='both', labelsize=7)
+
+    ax.grid(True, alpha=0.3)
 
     plt.xticks(rotation=45)
 
     plt.tight_layout()
 
-    st.pyplot(fig)
+    st.pyplot(fig, use_container_width=True)
+    plt.close(fig)
 
+def rain_graph_last_30days(csv_file, column, title, ylabel, figsize=(4,3)):
+    
+    df = pd.read_csv(csv_file)
 
+    # Convert date column to datetime
+    df["date"] = pd.to_datetime(df["date"])
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    ax.bar(df["date"], df[column])
+    ax.set_title(title)
+    ax.set_xlabel("Date")
+    ax.set_ylabel(ylabel)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    st.pyplot(fig, use_container_width=True)
+    plt.close(fig)
 # ==========================================================
 # TAB 1 : CURRENT WEATHER
 # ==========================================================
@@ -252,6 +277,11 @@ with tab1:
             latitude,
             longitude
         )
+        generate_historical_report(
+            latitude,
+            longitude
+        )
+        
 
     try:
 
@@ -274,50 +304,108 @@ with tab1:
             "Historical weather data could not be generated."
         )
 
+    try:
+        df_hourly = pd.read_csv("hourly_weather.csv")
+        st.subheader(
+            f"📊Hourly Historical Weather Data of {city}"
+        )
+        
+        st.dataframe(
+            df_hourly,
+            use_container_width=True
+        )
+    except FileNotFoundError:
+        st.warning(
+            "Historical weather data could not be generated."
+        )
+        
+
 
 # ==========================================================
 # TAB 2 : VISUALIZATIONS
 # ==========================================================
 
+
+    
 with tab2:
 
-    st.header(
-        f"📈 Maximum Temperature in {city} (Last 30 Days)"
-    )
+    def section_header(icon, title, color="#1E88E5"):
+        st.markdown(f"""
+        <div style="
+            background: linear-gradient(90deg, {color}, #64B5F6);
+            padding:10px;
+            border-radius:10px;
+            margin-top:8px;
+            margin-bottom:8px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.15);
+        ">
+            <h4 style="
+                color:white;
+                margin:0;
+                text-align:center;
+                font-size:16px;
+            ">
+                {icon} {title}
+            </h4>
+        </div>
+        """, unsafe_allow_html=True)
 
-    plot_weather_graph(
-        "weather_last_30_days.csv",
-        "temp_max",
-        "Maximum Temperature (30 Days)",
-        "Temperature (°C)"
-    )
+    st.markdown("""
+                <style>
+                .graph-card {
+                    background-color: #ffffff;
+                    padding: 8px;
+                    border-radius: 12px;
+                    border: 1px solid #ddd;
+                    box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+                    margin: 0;
+                    height: 100%;
+                }
+                /* Streamlit columns render as flex containers by default,
+                   this just tightens the gap and aligns items */
+                div[data-testid="stHorizontalBlock"] {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    align-items: stretch;
+                }
+                div[data-testid="column"] {
+                    flex: 1 1 300px;
+                }
+                </style>
+                """, unsafe_allow_html=True)
 
-    st.divider()
+    col1, col2, col3 = st.columns(3)
 
-    st.header(
-        f"📉 Minimum Temperature in {city} (Last 30 Days)"
-    )
+    with col1:
+        section_header("📈", f"Max Temp – {city}")
+        plot_weather_graph(
+            "weather_last_30_days.csv",
+            "temp_max",
+            "Maximum Temperature (30 Days)",
+            "Temperature (°C)",
+            figsize=(4, 3)
+        )
 
-    plot_weather_graph(
-        "weather_last_30_days.csv",
-        "temp_min",
-        "Minimum Temperature (30 Days)",
-        "Temperature (°C)"
-    )
+    with col2:
+        section_header("📉", f"Min Temp – {city}")
+        plot_weather_graph(
+            "weather_last_30_days.csv",
+            "temp_min",
+            "Minimum Temperature (30 Days)",
+            "Temperature (°C)",
+            figsize=(4, 3)
+        )
 
-    st.divider()
-
-    st.header(
-        f"🌧 Rainfall in {city} (Last 30 Days)"
-    )
-
-    plot_weather_graph(
-        "weather_last_30_days.csv",
-        "rain_mm",
-        "Rainfall (30 Days)",
-        "Rainfall (mm)"
-    )
-
+    with col3:
+        section_header("🌧", f"Rainfall – {city}")
+        rain_graph_last_30days(
+            "weather_last_30_days.csv",
+            "rain_mm",
+            "Rainfall (30 Days)",
+            "Rainfall (mm)",
+            figsize=(4, 3)
+        )
 
 # ==========================================================
 # TAB 3 : RAW JSON
@@ -326,3 +414,9 @@ with tab2:
 with tab3:
 
     st.json(data)
+    
+
+
+  
+st.divider()
+st.write("© 2026 , All rights reserved -- shirshadip ")
