@@ -143,7 +143,7 @@ tab1, tab2, tab3 = st.tabs(
 # Prevents generating the same CSV every time the app reruns.
 # ==========================================================
 
-@st.cache_data(ttl=3600)
+
 def generate_historical_report(lat, lon):
     weatherreport.generate_30_day_report(lat, lon)
     hourly_weatherreport.generate_hourly_weather_report(lat, lon)
@@ -153,55 +153,7 @@ def generate_historical_report(lat, lon):
 # GRAPH FUNCTION
 # ==========================================================
 
-def plot_weather_graph(csv_file, column, title, ylabel, figsize=(4, 3)):
 
-    df = pd.read_csv(csv_file)
-
-    df["date"] = pd.to_datetime(df["date"])
-
-    fig, ax = plt.subplots(figsize=figsize)
-
-    ax.plot(
-        df["date"],
-        df[column],
-        marker="o",
-        markersize=3,
-        linewidth=1.5
-    )
-
-    ax.set_title(title, fontsize=10)
-    ax.set_xlabel("Date", fontsize=8)
-    ax.set_ylabel(ylabel, fontsize=8)
-
-    ax.tick_params(axis='both', labelsize=7)
-
-    ax.grid(True, alpha=0.3)
-
-    plt.xticks(rotation=45)
-
-    plt.tight_layout()
-
-    st.pyplot(fig, use_container_width=True)
-    plt.close(fig)
-
-def rain_graph_last_30days(csv_file, column, title, ylabel, figsize=(4,3)):
-    
-    df = pd.read_csv(csv_file)
-
-    # Convert date column to datetime
-    df["date"] = pd.to_datetime(df["date"])
-
-    fig, ax = plt.subplots(figsize=figsize)
-
-    ax.bar(df["date"], df[column])
-    ax.set_title(title)
-    ax.set_xlabel("Date")
-    ax.set_ylabel(ylabel)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-
-    st.pyplot(fig, use_container_width=True)
-    plt.close(fig)
 # ==========================================================
 # TAB 1 : CURRENT WEATHER
 # ==========================================================
@@ -379,7 +331,7 @@ with tab2:
 
     with col1:
         section_header("📈", f"Max Temp – {city}")
-        plot_weather_graph(
+        Weathergraphs.plot_weather_graph(
             "weather_last_30_days.csv",
             "temp_max",
             "Maximum Temperature (30 Days)",
@@ -389,7 +341,7 @@ with tab2:
 
     with col2:
         section_header("📉", f"Min Temp – {city}")
-        plot_weather_graph(
+        Weathergraphs.plot_weather_graph(
             "weather_last_30_days.csv",
             "temp_min",
             "Minimum Temperature (30 Days)",
@@ -399,7 +351,7 @@ with tab2:
 
     with col3:
         section_header("🌧", f"Rainfall – {city}")
-        rain_graph_last_30days(
+        Weathergraphs.rain_graph_last_30days(
             "weather_last_30_days.csv",
             "rain_mm",
             "Rainfall (30 Days)",
