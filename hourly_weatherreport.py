@@ -5,14 +5,9 @@ import argparse
 
 
 
-def generate_hourly_weather_report (lat,lon):
-    
+def generate_hourly_weather_report(lat, lon):
+    """Download hourly weather data for the last 30 days and save it to CSV."""
 
-# Kolkata coordinates
-# latitude = 22.5726
-# longitude = 88.3639
-
-# Last 30 days
     end_date = datetime.today().date()
     start_date = end_date - timedelta(days=30)
 
@@ -27,30 +22,48 @@ def generate_hourly_weather_report (lat,lon):
         f"&timezone=auto"
     )
 
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url, timeout=20)
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"Hourly weather request failed: {exc}")
+        return False
+
+    try:
+        data = response.json()
+        hourly_data = data["hourly"]
+    except (ValueError, KeyError, TypeError) as exc:
+        print(f"Unexpected hourly API response: {exc}")
+        return False
+
+    required_columns = {
+        "time": "time",
+        "temperature_2m": "temperature",
+        "relative_humidity_2m": "humidity",
+        "precipitation": "rain",
+    }
+
+    missing_columns = [key for key in required_columns if key not in hourly_data]
+    if missing_columns:
+        print(f"Unexpected hourly API response: missing keys {missing_columns}")
+        return False
+
     df = pd.DataFrame({
-        "time": data["hourly"]["time"],
-        "temperature": data["hourly"]["temperature_2m"],
-        "humidity": data["hourly"]["relative_humidity_2m"],
-        "rain": data["hourly"]["precipitation"]
+        "time": hourly_data["time"],
+        "temperature": hourly_data["temperature_2m"],
+        "humidity": hourly_data["relative_humidity_2m"],
+        "rain": hourly_data["precipitation"],
     })
 
     df.to_csv("hourly_weather.csv", index=False)
     print("CSV saved successfully!")
     print(df.head())
-    
+    return True
 
 
+def generate_all_hourly_weather_report(lat, lon):
+    """Download a richer hourly weather dataset and save it to CSV."""
 
-def generate_all_hourly_weather_report (lat,lon):
-    
-
-# Kolkata coordinates
-# latitude = 22.5726
-# longitude = 88.3639
-
-# Last 30 days
     end_date = datetime.today().date()
     start_date = end_date - timedelta(days=30)
 
@@ -78,29 +91,65 @@ def generate_all_hourly_weather_report (lat,lon):
         f"&timezone=auto"
     )
 
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url, timeout=20)
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"Hourly weather request failed: {exc}")
+        return False
+
+    try:
+        data = response.json()
+        hourly_data = data["hourly"]
+    except (ValueError, KeyError, TypeError) as exc:
+        print(f"Unexpected hourly API response: {exc}")
+        return False
+
+    required_columns = {
+        "time": "time",
+        "temperature_2m": "temperature",
+        "relative_humidity_2m": "humidity",
+        "apparent_temperature": "feels_like",
+        "wind_speed_10m": "wind_speed",
+        "wind_direction_10m": "wind_direction",
+        "wind_gusts_10m": "wind_gusts",
+        "weather_code": "weather_code",
+        "cloud_cover": "cloud_cover",
+        "precipitation": "precipitation",
+        "rain": "rain",
+        "showers": "showers",
+        "snowfall": "snowfall",
+        "surface_pressure": "surface_pressure",
+        "visibility": "visibility",
+    }
+
+    missing_columns = [key for key in required_columns if key not in hourly_data]
+    if missing_columns:
+        print(f"Unexpected hourly API response: missing keys {missing_columns}")
+        return False
+
     df = pd.DataFrame({
-    "time": data["hourly"]["time"],
-    "temperature": data["hourly"]["temperature_2m"],
-    "humidity": data["hourly"]["relative_humidity_2m"],
-    "feels_like": data["hourly"]["apparent_temperature"],
-    "wind_speed": data["hourly"]["wind_speed_10m"],
-    "wind_direction": data["hourly"]["wind_direction_10m"],
-    "wind_gusts": data["hourly"]["wind_gusts_10m"],
-    "weather_code": data["hourly"]["weather_code"],
-    "cloud_cover": data["hourly"]["cloud_cover"],
-    "precipitation": data["hourly"]["precipitation"],
-    "rain": data["hourly"]["rain"],
-    "showers": data["hourly"]["showers"],
-    "snowfall": data["hourly"]["snowfall"],
-    "surface_pressure": data["hourly"]["surface_pressure"],
-    "visibility": data["hourly"]["visibility"]
-})
+        "time": hourly_data["time"],
+        "temperature": hourly_data["temperature_2m"],
+        "humidity": hourly_data["relative_humidity_2m"],
+        "feels_like": hourly_data["apparent_temperature"],
+        "wind_speed": hourly_data["wind_speed_10m"],
+        "wind_direction": hourly_data["wind_direction_10m"],
+        "wind_gusts": hourly_data["wind_gusts_10m"],
+        "weather_code": hourly_data["weather_code"],
+        "cloud_cover": hourly_data["cloud_cover"],
+        "precipitation": hourly_data["precipitation"],
+        "rain": hourly_data["rain"],
+        "showers": hourly_data["showers"],
+        "snowfall": hourly_data["snowfall"],
+        "surface_pressure": hourly_data["surface_pressure"],
+        "visibility": hourly_data["visibility"],
+    })
 
     df.to_csv("hourly_all_weather.csv", index=False)
     print("CSV saved successfully!")
     print(df.head())
+    return True
     
     
     

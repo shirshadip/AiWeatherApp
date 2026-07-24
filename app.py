@@ -145,8 +145,11 @@ tab1, tab2, tab3 = st.tabs(
 
 
 def generate_historical_report(lat, lon):
-    weatherreport.generate_30_day_report(lat, lon)
-    hourly_weatherreport.generate_hourly_weather_report(lat, lon)
+    try:
+        weatherreport.generate_30_day_report(lat, lon)
+        hourly_weatherreport.generate_hourly_weather_report(lat, lon)
+    except Exception as exc:
+        st.warning(f"Historical weather data could not be generated: {exc}")
 
 
 # ==========================================================
@@ -225,10 +228,6 @@ with tab1:
 
     with st.spinner("Generating historical weather report..."):
 
-        generate_historical_report(
-            latitude,
-            longitude
-        )
         generate_historical_report(
             latitude,
             longitude
@@ -326,10 +325,13 @@ with tab2:
                 }
                 </style>
                 """, unsafe_allow_html=True)
+    
+    
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
+        
         section_header("📈", f"Max Temp – {city}")
         Weathergraphs.plot_weather_graph(
             "weather_last_30_days.csv",
