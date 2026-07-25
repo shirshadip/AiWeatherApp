@@ -7,6 +7,7 @@ from streamlit_geolocation import streamlit_geolocation
 import weatherreport
 import hourly_weatherreport
 import Weathergraphs
+import time 
 
 
 # ==========================================================
@@ -147,6 +148,7 @@ tab1, tab2, tab3 = st.tabs(
 def generate_historical_report(lat, lon):
     try:
         weatherreport.generate_30_day_report(lat, lon)
+        weatherreport.generate_30_day_daily_all_report(lat,lon)
         hourly_weatherreport.generate_hourly_weather_report(lat, lon)
     except Exception as exc:
         st.warning(f"Historical weather data could not be generated: {exc}")
@@ -327,39 +329,49 @@ with tab2:
                 """, unsafe_allow_html=True)
     
     
+    with st.spinner("Generating dashboard...", show_time=True):
+        time.sleep(4)
+        col1, col2, col3 , col4 = st.columns(4)
 
-    col1, col2, col3 = st.columns(3)
+        with col1:
+            
+            section_header("📈", f"Max Temp – {city}")
+            Weathergraphs.plot_weather_graph(
+                "weather_last_30_days.csv",
+                "temp_max",
+                "Maximum Temperature (30 Days)",
+                "orange",
+                "Temperature (°C)",
+                figsize=(4, 3)
+            )
 
-    with col1:
+        with col2:
+            section_header("📉", f"Min Temp – {city}")
+            Weathergraphs.plot_weather_graph(
+                "weather_last_30_days.csv",
+                "temp_min",
+                "Minimum Temperature (30 Days)",
+                "cyan",
+                "Temperature (°C)",
+                figsize=(4, 3)
+            )
+
+        with col3:
+            section_header("🌧", f"Rainfall – {city}")
+            Weathergraphs.rain_graph_last_30days(
+                "weather_last_30_days.csv",
+                "rain_mm",
+                "Rainfall (30 Days)",
+                "Rainfall (mm)",
+                figsize=(4, 3)
+            )
         
-        section_header("📈", f"Max Temp – {city}")
-        Weathergraphs.plot_weather_graph(
-            "weather_last_30_days.csv",
-            "temp_max",
-            "Maximum Temperature (30 Days)",
-            "Temperature (°C)",
-            figsize=(4, 3)
-        )
-
-    with col2:
-        section_header("📉", f"Min Temp – {city}")
-        Weathergraphs.plot_weather_graph(
-            "weather_last_30_days.csv",
-            "temp_min",
-            "Minimum Temperature (30 Days)",
-            "Temperature (°C)",
-            figsize=(4, 3)
-        )
-
-    with col3:
-        section_header("🌧", f"Rainfall – {city}")
-        Weathergraphs.rain_graph_last_30days(
-            "weather_last_30_days.csv",
-            "rain_mm",
-            "Rainfall (30 Days)",
-            "Rainfall (mm)",
-            figsize=(4, 3)
-        )
+        with col4:
+            section_header("🌧", f"Weather condition – {city}")
+            Weathergraphs.weather_condition_pie_chart(
+                            "weather_daily_all_report.csv",
+                            "Weather Condition (30 Days)"
+            )
 
 # ==========================================================
 # TAB 3 : RAW JSON

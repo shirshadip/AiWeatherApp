@@ -184,3 +184,5 @@ if __name__ == "__main__":
     generate_30_day_report(args.lat, args.lon)
     generate_30_day_daily_all_report(args.lat, args.lon)
     generate_30_day_hum_wind_report(args.lat, args.lon)
+    
+    
