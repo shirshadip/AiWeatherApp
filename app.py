@@ -34,6 +34,27 @@ API_KEY = st.secrets["api_key"]
 # Try to get the user's current location using browser GPS.
 # If the user denies access, we will show a manual city input.
 # ==========================================================
+st.markdown(
+    """
+     <div style="
+        background: linear-gradient(135deg, #0F172A, #1E293B);
+        padding: 18px;
+        border-radius: 15px;
+        border-left: 6px solid #38BDF8;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    ">
+            <h1 style="
+            color: #FFFFFF;
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        ">
+                👇 Click the button below to get the weather report of Your current Location
+            </h1></div>
+    """,
+    unsafe_allow_html=True
+)
 
 location = streamlit_geolocation()
 
@@ -42,10 +63,56 @@ city = None
 
 
 # ==========================================================
-# AUTOMATIC LOCATION
+# MANUAL LOCATION INPUT (Always Visible)
+# ==========================================================
+st.markdown(
+    """
+     <div style="
+        background: linear-gradient(135deg, #0F172A, #1E293B);
+        padding: 18px;
+        border-radius: 15px;
+        border-left: 6px solid #38BDF8;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    ">
+            <h1 style="
+            color: #FFFFFF;
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        ">
+                👇 Enter Location to get weather report of the area 
+            </h1></div>
+    """,
+    unsafe_allow_html=True
+)
+city = st.text_input(
+    "Enter the location ",
+    placeholder="e.g. Kolkata",
+    key="city_search_input",
+    autocomplete="country"
+).strip()
+
+# ==========================================================
+# USE MANUAL LOCATION IF PROVIDED
 # ==========================================================
 
-if (
+if city:
+
+    st.info(f"Showing the availabe reports for : {city}")
+
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather"
+        f"?q={city}"
+        f"&appid={API_KEY}"
+        f"&units=metric"
+    )
+
+# ==========================================================
+# OTHERWISE USE GPS LOCATION
+# ==========================================================
+
+elif (
     location
     and location.get("latitude") is not None
     and location.get("longitude") is not None
@@ -56,7 +123,6 @@ if (
 
     st.success("📍 Location detected automatically")
 
-    # Fetch weather using coordinates
     url = (
         f"https://api.openweathermap.org/data/2.5/weather"
         f"?lat={lat}"
@@ -66,33 +132,16 @@ if (
     )
 
 # ==========================================================
-# MANUAL LOCATION INPUT
+# NO LOCATION AVAILABLE
 # ==========================================================
 
 else:
 
     st.warning(
-        "Location permission denied or unavailable. "
+        "Location permission denied or unavailable.\n"
         "Please enter a location manually."
     )
-
-    city = st.text_input(
-        "Enter Location",
-        placeholder="e.g. Kolkata",
-        key="city_search_input"
-    ).strip()
-
-    if city:
-
-        url = (
-            f"https://api.openweathermap.org/data/2.5/weather"
-            f"?q={city}"
-            f"&appid={API_KEY}"
-            f"&units=metric"
-        )
-
-    else:
-        st.stop()
+    st.stop()
 
 
 # ==========================================================
