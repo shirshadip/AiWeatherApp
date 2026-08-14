@@ -1,0 +1,321 @@
+```text
+Analyze the following weather data and produce a beautiful, user-friendly CURRENT WEATHER SITUATION REPORT.
+
+The goal is to tell an ordinary user:
+
+1. What is happening RIGHT NOW?
+2. What has the weather been doing over the last few days?
+3. How has today's weather changed compared with recent conditions?
+4. What do the numbers mathematically tell us?
+5. Is there any unusual or potentially dangerous weather?
+6. What practical precautions should the user take?
+
+IMPORTANT:
+- Use ONLY the supplied data.
+- Do NOT invent missing measurements.
+- Do NOT invent forecasts.
+- Do NOT assume a weather event is occurring unless the data supports it.
+- If a value is unavailable, say that it is unavailable.
+- Clearly distinguish observations from calculations.
+- Use the timestamps to determine which observation is the current/latest observation.
+- Use the most recent observations to analyze recent weather.
+- If there is insufficient data for a calculation or trend, say so.
+
+==================================================
+WEATHER DATA
+==================================================
+
+Location:
+{location}
+
+Current/latest observation:
+{current_weather}
+
+Recent weather observations:
+{recent_weather}
+
+Additional forecast information, if available:
+{forecast_data}
+
+Data source timestamp:
+{timestamp}
+
+==================================================
+ANALYSIS
+==================================================
+
+Create the report using the following structure.
+
+# 🌦️ CURRENT WEATHER SITUATION
+
+Start with a concise description of the current situation.
+
+Include, when available:
+
+| Factor | Current | Situation |
+|---|---:|---|
+| 🌡️ Temperature | ... | ... |
+| 🤗 Feels Like | ... | ... |
+| 💧 Humidity | ... | ... |
+| 🌧️ Rainfall | ... | ... |
+| 💨 Wind | ... | ... |
+| ☁️ Cloud Cover | ... | ... |
+| 🧭 Pressure | ... | ... |
+| 👁️ Visibility | ... | ... |
+| ☀️ UV Index | ... | ... |
+
+Then give a short human-readable explanation.
+
+Example style:
+
+"🌡️ It is currently warm and humid. Humidity is high enough to make the temperature feel more uncomfortable than the thermometer value suggests."
+
+Do NOT use this example unless supported by the actual data.
+
+==================================================
+# 📅 THE LAST FEW DAYS
+
+Analyze the recent observations.
+
+Prefer the last 3–7 days if available.
+
+Create a compact table:
+
+| Date/Time | Temp | Rain | Humidity | Wind | Condition |
+|---|---:|---:|---:|---:|---|
+
+Then explain the major changes.
+
+Identify:
+- warming/cooling
+- increasing/decreasing rainfall
+- rising/falling humidity
+- increasing/decreasing wind
+- pressure changes
+- persistent conditions
+- sudden changes
+
+==================================================
+# 🌡️ TEMPERATURE TREND
+
+Calculate when sufficient data exists:
+
+Mean:
+μ = Σxᵢ / n
+
+Minimum:
+min(x)
+
+Maximum:
+max(x)
+
+Range:
+R = max(x) − min(x)
+
+Standard deviation:
+σ = √[(1/n)Σ(xᵢ − μ)²]
+
+Present the results in a simple table.
+
+Then create a simple visual trend representation.
+
+Example:
+
+Temperature
+High  ┤       ●
+      ┤    ●     ●
+      ┤ ●
+Low   ┤________________
+       Day1 Day2 Day3 Today
+
+Use the actual data points when constructing the diagram.
+
+Explain what the trend means in ordinary language.
+
+==================================================
+# 🌧️ RAINFALL ANALYSIS
+
+Calculate when possible:
+
+- Total rainfall
+- Average rainfall
+- Number of rainy days
+- Maximum rainfall
+- Percentage of rainy days
+- Change compared with previous days
+
+Show a simple rainfall chart.
+
+Example:
+
+Rainfall
+Day 1  ███
+Day 2  ███████
+Day 3  █
+Today  █████
+
+Use actual values from the data.
+
+Explain whether recent rainfall appears:
+- light
+- moderate
+- heavy
+- increasing
+- decreasing
+- intermittent
+- persistent
+
+Only use these descriptions when justified by the supplied measurements.
+
+==================================================
+# 💧 HUMIDITY ANALYSIS
+
+Calculate:
+
+- Mean humidity
+- Minimum humidity
+- Maximum humidity
+- Humidity range
+- Recent change
+
+Explain how the humidity may affect comfort.
+
+For example, high humidity can make warm conditions feel more uncomfortable.
+
+Do not make health claims beyond what the data supports.
+
+==================================================
+# 💨 WIND & ATMOSPHERIC CONDITIONS
+
+Analyze:
+
+- Average wind speed
+- Maximum wind speed
+- Wind direction
+- Wind trend
+- Atmospheric pressure
+- Pressure change
+
+Identify significant changes.
+
+If wind or pressure changes suggest potentially unsettled weather, clearly state that this is an interpretation of the observed data, not a forecast.
+
+==================================================
+# ⚠️ EXTREME / UNUSUAL WEATHER
+
+Determine whether the data contains unusually high or low values relative to the supplied recent observations.
+
+Use statistical evidence when possible.
+
+For example:
+
+z = (x − μ) / σ
+
+If useful, explain an unusually large deviation in simple language.
+
+Do not label something "extreme" solely because it sounds unusual.
+
+Separate:
+
+🟢 Normal
+🟡 Noticeable
+🟠 Concerning
+🔴 Potentially hazardous
+
+Only assign a severity level when supported by the supplied data.
+
+==================================================
+# 📊 MATHEMATICAL WEATHER SUMMARY
+
+Create a compact statistics table:
+
+| Variable | Average | Minimum | Maximum | Range | Trend |
+|---|---:|---:|---:|---:|---|
+| Temperature | ... | ... | ... | ... | ↑/↓/→ |
+| Rainfall | ... | ... | ... | ... | ↑/↓/→ |
+| Humidity | ... | ... | ... | ... | ↑/↓/→ |
+| Wind | ... | ... | ... | ... | ↑/↓/→ |
+| Pressure | ... | ... | ... | ... | ↑/↓/→ |
+
+Only populate statistics that can actually be calculated.
+
+==================================================
+# 🧠 WHAT THE NUMBERS MEAN
+
+Translate the mathematical results into normal language.
+
+Answer questions such as:
+
+- Is today warmer or cooler than recent days?
+- Is it becoming wetter or drier?
+- Is humidity increasing?
+- Is the wind becoming stronger?
+- Is today's weather relatively normal or unusual?
+- Which weather factor is most important right now?
+
+Avoid excessive scientific jargon.
+
+==================================================
+# 🛡️ PRACTICAL PRECAUTIONS
+
+If the weather data indicates potentially uncomfortable or hazardous conditions, provide practical precautions.
+
+Examples:
+
+🌧️ Rain:
+- Carry rain protection.
+- Be careful on slippery/waterlogged roads.
+- Avoid driving through flooded areas.
+
+🌡️ Heat:
+- Drink sufficient water.
+- Avoid unnecessary prolonged exposure to strong midday heat.
+- Take breaks in cooler/shaded locations.
+
+💨 Strong wind:
+- Avoid exposed areas when conditions are hazardous.
+- Secure loose outdoor objects.
+
+⛈️ Thunder/lightning:
+- Seek suitable shelter.
+- Avoid exposed open areas.
+
+👁️ Poor visibility:
+- Drive more slowly and carefully.
+- Use appropriate vehicle lighting.
+
+Only show precautions relevant to the actual data.
+
+==================================================
+# ⭐ OVERALL WEATHER SCORE
+
+Create a simple weather-condition summary based ONLY on the supplied measurements.
+
+For example:
+
+Comfort:       ⭐⭐⭐☆☆
+Rain risk:     ⭐⭐⭐⭐☆
+Wind concern:  ⭐⭐☆☆☆
+Heat concern:  ⭐⭐⭐☆☆
+Overall:       🟡 Moderate conditions
+
+Do not manufacture a score from arbitrary assumptions.
+
+Explain briefly how the score was determined.
+
+==================================================
+# 📝 FINAL SUMMARY
+
+Finish with a short, highly readable summary:
+
+"Right now: ..."
+"Recent trend: ..."
+"Main concern: ..."
+"Best precaution: ..."
+
+The final summary should take approximately 10–20 seconds to read.
+
+Make the report visually attractive, clear, and useful to an ordinary person.
+
+The user should understand the weather situation without needing knowledge of meteorology or statistics.
+```

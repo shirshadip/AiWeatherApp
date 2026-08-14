@@ -8,7 +8,7 @@ import weatherreport
 import hourly_weatherreport
 import Weathergraphs
 import time 
-
+import AI
 
 # ==========================================================
 # PAGE CONFIGURATION
@@ -26,6 +26,17 @@ st.set_page_config(
 # ==========================================================
 
 API_KEY = st.secrets["api_key"]
+
+
+# ==========================================================
+# LOAD PROMPT FILES
+# ==========================================================
+
+with open("System_prompt.txt", "r", encoding="utf-8") as system_file:
+    system_prompt_text = system_file.read()
+
+with open("User_prompt.txt", "r", encoding="utf-8") as user_file:
+    user_prompt_text = user_file.read()
 
 
 # ==========================================================
@@ -177,19 +188,6 @@ except requests.exceptions.RequestException:
 
 
 # ==========================================================
-# TABS
-# ==========================================================
-
-tab1, tab2, tab3 = st.tabs(
-    [
-        "🌤 Current Weather",
-        "📈 Weather Visualizations",
-        "📄 JSON Data"
-    ]
-)
-
-
-# ==========================================================
 # CACHE WEATHER REPORT GENERATION
 # ==========================================================
 # Prevents generating the same CSV every time the app reruns.
@@ -201,6 +199,7 @@ def generate_historical_report(lat, lon):
         weatherreport.generate_30_day_report(lat, lon)
         weatherreport.generate_30_day_daily_all_report(lat,lon)
         hourly_weatherreport.generate_hourly_weather_report(lat, lon)
+        hourly_weatherreport.generate_all_hourly_weather_report(lat, lon)
     except Exception as exc:
         st.warning(f"Historical weather data could not be generated: {exc}")
 
@@ -208,6 +207,11 @@ def generate_historical_report(lat, lon):
 # ==========================================================
 # GRAPH FUNCTION
 # ==========================================================
+tab1, tab2, tab3 = st.tabs([
+    "Weather Insights",
+    "Weather Data Visualization",
+    "For Developers"
+])
 
 
 # ==========================================================
@@ -276,9 +280,9 @@ with tab1:
     st.write(f"📍 Longitude: {longitude}")
 
     # ------------------------------------------------------
-    # HISTORICAL WEATHER DATA
-    # ------------------------------------------------------
-
+        # HISTORICAL WEATHER DATA
+        # ------------------------------------------------------
+            
     with st.spinner("Generating historical weather report..."):
 
         generate_historical_report(
@@ -293,14 +297,14 @@ with tab1:
             "weather_last_30_days.csv"
         )
 
-        st.subheader(
-            f"📊 Historical Weather Data of {city}"
-        )
+        # st.subheader(
+        #     f"📊 Historical Weather Data of {city}"
+        # )
 
-        st.dataframe(
-            df,
-            use_container_width=True
-        )
+        # st.dataframe(
+        #     df,
+        #     use_container_width=True
+        # )
 
     except FileNotFoundError:
 
@@ -310,20 +314,48 @@ with tab1:
 
     try:
         df_hourly = pd.read_csv("hourly_weather.csv")
-        st.subheader(
-            f"📊Hourly Historical Weather Data of {city}"
-        )
+        # st.subheader(
+        #     f"📊Hourly Historical Weather Data of {city}"
+        # )
         
-        st.dataframe(
-            df_hourly,
-            use_container_width=True
-        )
+        # st.dataframe(
+        #     df_hourly,
+        #     use_container_width=True
+        # )
     except FileNotFoundError:
         st.warning(
             "Historical weather data could not be generated."
         )
         
 
+    # ------------------------------------------------------
+    # AI Response 
+    # ------------------------------------------------------
+    st.divider()
+    
+    with st.spinner("Generating Weather analytics with AI" , show_time=True):
+        st.title("🌦️ Weather AI Analyst")
+
+        df = pd.read_csv("weather_daily_all_report.csv")
+
+        st.subheader("Weather Data")
+        # st.dataframe(df)
+        system_prompt = f"""{system_prompt_text}"""
+        
+
+        prompt = f"""Use {df.to_string()} , and {user_prompt_text}"""
+        
+
+        st.subheader("🤖 AI Analysis")
+
+        full_text = ""
+        placeholder = st.empty()
+
+        for chunk in AI.AI_Response(prompt, system_prompt):
+            if chunk["type"] == "content":
+                full_text += chunk["content"]
+                placeholder.markdown(full_text, unsafe_allow_html=True)
+    
 
 # ==========================================================
 # TAB 2 : VISUALIZATIONS
