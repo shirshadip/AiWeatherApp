@@ -36,22 +36,22 @@ API_KEY = st.secrets["api_key"]
 # ==========================================================
 st.markdown(
     """
-     <div style="
-        background: linear-gradient(135deg, #0F172A, #1E293B);
-        padding: 18px;
-        border-radius: 15px;
-        border-left: 6px solid #38BDF8;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    <div style="
+        background: #111827;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border-left: 3px solid #38BDF8;
+        margin-bottom: 14px;
     ">
-            <h1 style="
-            color: #FFFFFF;
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
+        <div style="
+            color: #E5E7EB;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
         ">
-                👇 Click the button below to get the weather report of Your current Location
-            </h1></div>
+            📍 Get weather for your current location
+        </div>
+    </div>
     """,
     unsafe_allow_html=True
 )
@@ -63,31 +63,33 @@ city = None
 
 
 # ==========================================================
-# MANUAL LOCATION INPUT (Always Visible)
+# MANUAL LOCATION INPUT
 # ==========================================================
+
 st.markdown(
     """
-     <div style="
-        background: linear-gradient(135deg, #0F172A, #1E293B);
-        padding: 18px;
-        border-radius: 15px;
-        border-left: 6px solid #38BDF8;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    <div style="
+        background: #111827;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border-left: 3px solid #38BDF8;
+        margin-bottom: 14px;
     ">
-            <h1 style="
-            color: #FFFFFF;
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
+        <div style="
+            color: #E5E7EB;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
         ">
-                👇 Enter Location to get weather report of the area 
-            </h1></div>
+            🔎 Search weather by location
+        </div>
+    </div>
     """,
     unsafe_allow_html=True
 )
+
 city = st.text_input(
-    "Enter the location ",
+    "Enter the location",
     placeholder="e.g. Kolkata",
     key="city_search_input",
     autocomplete="country"
