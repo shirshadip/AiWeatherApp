@@ -333,6 +333,27 @@ with tab1:
     # ------------------------------------------------------
     st.divider()
     
+
+    st.markdown("""
+    <style>
+    div.stButton > button {
+        background-color: #38BDF8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+    }
+
+    div.stButton > button:hover {
+        background-color: #0f47ae;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    if st.button("Tap here to genrate the Weather prediction according to AI 🤖" , "blue"):
+        with st.spinner("Generating Weather predictions with AI" , show_time=True):
+            st.write("YO")
+    st.divider()
+    
     with st.spinner("Generating Weather analytics with AI" , show_time=True):
         st.title("🌦️ Weather AI Analyst")
 
