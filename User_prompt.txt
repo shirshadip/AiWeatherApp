@@ -24,6 +24,10 @@ CORE PRINCIPLES
 9. Avoid unnecessary scientific jargon. When technical terminology is useful, explain it briefly.
 10. Prioritize safety when weather conditions indicate a potential hazard.
 
+
+---------------------
+Do not use those data fields which are empty , filter those and provide clean analytics 
+
 ANALYSIS REQUIREMENTS
 ---------------------
 Analyze the supplied weather information using the following framework:
