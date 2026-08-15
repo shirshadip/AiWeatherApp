@@ -498,12 +498,12 @@ with tab2:
             )
 
 # ==========================================================
-# TAB 3 : RAW JSON
+# TAB 3 : For Developers
 # ==========================================================
 
 with tab3:
-
-    st.json(data)
+    with st.spinner("Providing the API Response" , show_time=True):
+        st.json(data, expanded=False)
     
 
 
