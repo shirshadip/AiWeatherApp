@@ -38,6 +38,8 @@ with open("System_prompt.txt", "r", encoding="utf-8") as system_file:
 with open("User_prompt.txt", "r", encoding="utf-8") as user_file:
     user_prompt_text = user_file.read()
 
+with open("Prediction_prompt.txt" , "r" , encoding="utf-8") as prediction_file:
+    prediction_prompt_text = prediction_file.read()
 
 # ==========================================================
 # LOCATION DETECTION
@@ -349,33 +351,51 @@ with tab1:
     }
     </style>
     """, unsafe_allow_html=True)
-    if st.button("Tap here to genrate the Weather prediction according to AI 🤖" , "blue"):
-        with st.spinner("Generating Weather predictions with AI" , show_time=True):
-            st.write("YO")
+    if st.button("Tap here to genrate the Weather prediction according to AI 🤖", type="primary"):
+        with st.spinner("Generating Weather predictions with AI", show_time=True):
+            st.title("🌦️ Weather AI Analyst")
+
+            df = pd.read_csv("weather_daily_all_report.csv")
+
+            st.subheader("Weather Data")
+            # st.dataframe(df)
+            system_prompt = f"""{system_prompt_text}"""
+
+            prediction_prompt_input = f"""Use {df.to_string()} , and {prediction_prompt_text}"""
+
+            st.subheader("🤖 Weather Prediction according to AI")
+
+            full_text = ""
+            placeholder = st.empty()
+
+            for chunk in AI.AI_Response(prediction_prompt_input, system_prompt):
+                if chunk["type"] == "content":
+                    full_text += chunk["content"]
+                    placeholder.markdown(full_text, unsafe_allow_html=True)
+
     st.divider()
-    
-    with st.spinner("Generating Weather analytics with AI" , show_time=True):
-        st.title("🌦️ Weather AI Analyst")
 
-        df = pd.read_csv("weather_daily_all_report.csv")
+    if st.button("Tap here to generate AI weather analysis 🤖"):
+        with st.spinner("Generating Weather analytics with AI", show_time=True):
+            st.title("🌦️ Weather AI Analyst")
 
-        st.subheader("Weather Data")
-        # st.dataframe(df)
-        system_prompt = f"""{system_prompt_text}"""
-        
+            df = pd.read_csv("weather_daily_all_report.csv")
 
-        prompt = f"""Use {df.to_string()} , and {user_prompt_text}"""
-        
+            st.subheader("Weather Data")
+            # st.dataframe(df)
+            system_prompt = f"""{system_prompt_text}"""
 
-        st.subheader("🤖 AI Analysis")
+            prompt = f"""Use {df.to_string()} , and {user_prompt_text}"""
 
-        full_text = ""
-        placeholder = st.empty()
+            st.subheader("🤖 AI Analysis")
 
-        for chunk in AI.AI_Response(prompt, system_prompt):
-            if chunk["type"] == "content":
-                full_text += chunk["content"]
-                placeholder.markdown(full_text, unsafe_allow_html=True)
+            full_text = ""
+            placeholder = st.empty()
+
+            for chunk in AI.AI_Response(prompt, system_prompt):
+                if chunk["type"] == "content":
+                    full_text += chunk["content"]
+                    placeholder.markdown(full_text, unsafe_allow_html=True)
     
 
 # ==========================================================
