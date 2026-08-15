@@ -7,3 +7,7 @@ test.py
 weather_last_30_days.csv
 plottest.ipynb
 .env
+hourly_all_weather.csv
+hourly_weather.csv
+weather_daily_all_report.csv
+weather_last_30_days.csv
