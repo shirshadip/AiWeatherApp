@@ -6,6 +6,9 @@ import streamlit as st
 
 load_dotenv()
 
+DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
+DEFAULT_TEMPERATURE = 1.0
+
 client = OpenAI(
     base_url="https://integrate.api.nvidia.com/v1",
     api_key=st.secrets["AI_API_KEY"]
@@ -13,10 +16,15 @@ client = OpenAI(
 
 
 
-def AI_Response(prompt, system_prompt):
+def AI_Response(
+    prompt,
+    system_prompt,
+    model=DEFAULT_MODEL,
+    temperature=DEFAULT_TEMPERATURE,
+):
 
     completion = client.chat.completions.create(
-        model="nvidia/nemotron-3-ultra-550b-a55b",
+        model=model,
 
         messages=[
             {
@@ -28,6 +36,7 @@ def AI_Response(prompt, system_prompt):
                 "content": prompt
             }
         ],
+        temperature=temperature,
         stream=True
     )
 

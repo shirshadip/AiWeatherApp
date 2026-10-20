@@ -35,6 +35,10 @@ API_KEY = st.secrets["api_key"]
 with open("System_prompt.txt", "r", encoding="utf-8") as system_file:
     system_prompt_text = system_file.read()
 
+st.session_state.setdefault("ai_model", AI.DEFAULT_MODEL)
+st.session_state.setdefault("ai_temperature", AI.DEFAULT_TEMPERATURE)
+st.session_state.setdefault("ai_system_prompt", system_prompt_text)
+
 with open("User_prompt.txt", "r", encoding="utf-8") as user_file:
     user_prompt_text = user_file.read()
 
@@ -359,7 +363,7 @@ with tab1:
 
             st.subheader("Weather Data")
             # st.dataframe(df)
-            system_prompt = f"""{system_prompt_text}"""
+            system_prompt = st.session_state["ai_system_prompt"]
 
             prediction_prompt_input = f"""Use {df.to_string()} , and {prediction_prompt_text}"""
 
@@ -368,7 +372,12 @@ with tab1:
             full_text = ""
             placeholder = st.empty()
 
-            for chunk in AI.AI_Response(prediction_prompt_input, system_prompt):
+            for chunk in AI.AI_Response(
+                prediction_prompt_input,
+                system_prompt,
+                model=st.session_state["ai_model"],
+                temperature=st.session_state["ai_temperature"],
+            ):
                 if chunk["type"] == "content":
                     full_text += chunk["content"]
                     placeholder.markdown(full_text, unsafe_allow_html=True)
@@ -383,7 +392,7 @@ with tab1:
 
             st.subheader("Weather Data")
             # st.dataframe(df)
-            system_prompt = f"""{system_prompt_text}"""
+            system_prompt = st.session_state["ai_system_prompt"]
 
             prompt = f"""Use {df.to_string()} , and {user_prompt_text}"""
 
@@ -392,7 +401,12 @@ with tab1:
             full_text = ""
             placeholder = st.empty()
 
-            for chunk in AI.AI_Response(prompt, system_prompt):
+            for chunk in AI.AI_Response(
+                prompt,
+                system_prompt,
+                model=st.session_state["ai_model"],
+                temperature=st.session_state["ai_temperature"],
+            ):
                 if chunk["type"] == "content":
                     full_text += chunk["content"]
                     placeholder.markdown(full_text, unsafe_allow_html=True)
@@ -502,7 +516,77 @@ with tab2:
 # ==========================================================
 
 with tab3:
-    with st.spinner("Providing the API Response" , show_time=True):
+    st.markdown(
+        """
+        <div class="developer-hero">
+            <div class="developer-eyebrow">WEATHER AI · DEVELOPER TOOLS</div>
+            <h2>Configure your AI experience</h2>
+            <p>Adjust the model and instructions used for weather predictions and analysis.</p>
+        </div>
+        <style>
+        .developer-hero {
+            padding: 1.5rem 1.75rem;
+            margin: 0 0 1.25rem;
+            border: 1px solid rgba(56, 189, 248, 0.32);
+            border-radius: 16px;
+            background: linear-gradient(125deg, rgba(14, 116, 144, 0.24), rgba(30, 41, 59, 0.78));
+        }
+        .developer-hero h2 {
+            margin: 0.25rem 0 0.4rem;
+            color: #f8fafc;
+        }
+        .developer-hero p {
+            margin: 0;
+            color: #cbd5e1;
+        }
+        .developer-eyebrow {
+            color: #7dd3fc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.container(border=True):
+        st.subheader("AI settings")
+        st.caption("These settings apply to both weather predictions and AI analysis.")
+        model_col, temperature_col = st.columns([2, 1])
+
+        with model_col:
+            st.text_input(
+                "NVIDIA model",
+                key="ai_model",
+                help="Enter a model name from NVIDIA's inference catalog.",
+            )
+
+        with temperature_col:
+            st.slider(
+                "Model temperature",
+                min_value=0.0,
+                max_value=2.0,
+                step=0.05,
+                key="ai_temperature",
+                help="Lower values are more focused; higher values are more varied.",
+            )
+
+        st.text_area(
+            "System prompt",
+            key="ai_system_prompt",
+            height=220,
+            help="Instructions that guide both AI weather features.",
+        )
+
+        st.link_button(
+            "View GitHub repository",
+            "https://github.com/shirshadip/AiWeatherApp",
+        )
+
+    st.subheader("Weather API response")
+    st.caption("Raw OpenWeatherMap response for the selected location.")
+    with st.container(border=True):
         st.json(data, expanded=False)
     
 

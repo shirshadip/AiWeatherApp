@@ -182,10 +182,11 @@ See `requirements.txt` for complete list.
 - Matplotlib-powered visualizations
 - Responsive design for all screen sizes
 
-### Tab 3: JSON Data
+### Tab 3: For Developers
 
-- Raw API response data viewer
-- Useful for debugging and advanced analysis
+- Configure the NVIDIA model, generation temperature, and system prompt
+- Open the [AiWeatherApp GitHub repository](https://github.com/shirshadip/AiWeatherApp)
+- Inspect the raw weather API response as JSON
 
 ## Testing
 
