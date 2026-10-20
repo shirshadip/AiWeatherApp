@@ -105,9 +105,10 @@ Create or update `.streamlit/secrets.toml`:
 
 ```toml
 api_key = "your_openweathermap_api_key_here"
+AI_API_KEY = "your_nvidia_api_key_here"
 ```
 
-> **Note:** Get your free API key from [OpenWeatherMap](https://openweathermap.org/api)
+Get a weather API key from [OpenWeatherMap](https://openweathermap.org/api) and an inference API key from NVIDIA. Keep both keys private; do not commit `secrets.toml`.
 
 ## Usage
 

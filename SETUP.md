@@ -84,10 +84,19 @@ Your OpenWeatherMap API key is stored in:
 .streamlit/secrets.toml
 ```
 
-The app will automatically use it. If needed to change:
+Add both API keys to that file so the app can fetch weather and generate AI analysis:
+
+```toml
+api_key = "your_openweathermap_api_key_here"
+AI_API_KEY = "your_nvidia_api_key_here"
+```
+
+The AI analysis uses NVIDIA's OpenAI-compatible API with the `nvidia/nemotron-3-ultra-550b-a55b` model. Keep the keys private; `secrets.toml` is gitignored.
+
+To change either key:
 
 1. Edit `.streamlit/secrets.toml`
-2. Replace the API key value
+2. Replace the corresponding key value
 3. Restart the app
 
 ---
